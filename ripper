@@ -1,0 +1,22 @@
+Walkthrough Ripper vulnhub
+
+1. seperti biasa cek dahulu ip yang digunakan vm nya 
+'netdiscover -i ens33 -r 192.168.0.0/24
+2. setelah dicek dan mendapatkan ipnya {192.168.0.9} maka saya cek menggunakan nmap 
+'nmap -A 192.168.0.9'
+3. dan terdapat 3 port yang terbuka 22,80,10000 yang port 10000 adalah port webminnya jadi kita cek webminnya dan ada error harus https dan url nya ripper-min jadi saya ubah dulu di /etc/hosts
+4. setelah diubah dan dicek harus login terlebih dahulu karena tidak ada petunjuk mengenai username dan password akhirnya saya menggunaan dirb untuk scan directory yang ada 
+5. setelah dicek ternyata ada robots.txt dan saat dicek ada encode base64 dan saya decode terdapat petunjuk 
+'we scan php codes with rips'
+6. akhirnya saya cek directoory rips menggunakan url seperti ini
+'http://ripper-min/rips'
+7. setelah itu kita scan /var/www. klik files terdapat secret.php dan saat dibuka ada username dan password ripper '"user name: ripper"pass: "Gamespeopleplay"'
+8. akhirnya saya ssh dan bisa setelah itu saya menemukan flag user
+9. lalu saya mencari file yang bisa menjadi petunjuk saya menggunakan command berikut
+'find / -type f -user cubes -exec ls -la {} \; 2>/dev/null
+dan mendapatkan file secret /mnt/secret.file dan isinya password yang memungkinkan password cubes
+10. saya su cubes dan masukkan passwordnya dan bisa masuk
+11. selanjutnya saya bingung harus gimana akhirnya saya lakukan command yang sama seperti diatas dan ditemukan log file '/var/webmin/backup/miniser.log'
+12. dan ada username admin dan pass tokiohotel
+13. saya buka kembali webmin dan masukkan password dan bisa masuk.
+14.  dan klik alt + k maka dapat terminal dan ls ada flag kedua

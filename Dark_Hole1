@@ -1,0 +1,19 @@
+Writeup DarkHole 1 Vulhub
+
+Ip : 192.168.88.222
+Link : http://www.vulnhub.com/entry/darkhole-1,724/
+Mission : Dapatkan password
+
+1. Pertama bikin user terlebih dahulu seterah nama sama password apa 
+
+2. Kirim repeater dengan burp suite ketika ingin mengganti password ubah id menjadi satu sehingga mendapatkan admin 
+
+3. Setelah berhasil upload shell yang berformat .phar . Untuk shell ny kalian bisa akses lewat ini : https://github.com/flozz/p0wny-shell/blob/master/shell.php
+
+4. Setelah berhasil yang masuk ke directory /home/john
+
+5. Lalu buka file password, karena gak bisa kita ubah seluruh data di dalam john itu menjadi 777 dengan : echo 'bash' > /tmp/id; chmod +x /tmp/id; export PATH=/tmp:$PATH
+
+6. Jalankan ./toto, kemudian buka passwordnya dan ketemu passwordnya
+
+7. Akses melalui ssh , ssh john@192.168.88.222 . Masukan password yang barusan, dan cat user.txt . Dan ketemu flagnya DarkHole{You_Can_DO_It}

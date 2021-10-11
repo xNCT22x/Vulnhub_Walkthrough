@@ -1,0 +1,39 @@
+Walkthrough vulnhub money-box
+
+1. kita cek ip terlebih dahulu dengan menggunakan netdiscover :
+'netdiscover -i ens33 -r 192.168.0.0/24'
+maka didapat ipnya 192.168.0.131
+
+2. lalu kita nmap untuk mencari port apa saja yang terbuka 
+'nmap -A 192.168.0.131'
+maka didapat port yang terbuka ftp(21), ssh (22) dan http (80).
+
+3. selanjutnya kita cek web nya lalu kita enumerate.
+pertama saya buka defaultnya http://192.168.0.131/ dan tidak ada apa-apa jadi selanjutnya saya cek source code nya dan tidak ada sesuatu yang spesial.
+
+4. selanjutnya saya pakai tools dirb untuk mencari directory yang ada :
+'dirb http://192.168.0.131' 
+dan didapat directory blogs.
+
+5. setelah di cek ternyata di blogs juga tidak ada apa2 jadi saya cek source code nya dan didapat clue yaitu 'the hint is the another secret directory is S3cret-T3xt' lalu saya cek directory tersebut juga 'nothing here' tapi tidak lupa cek source code kembali dan ada clue lagi 'Secret Key 3xtr4ctd4t4'
+
+6. dan saya penasaran apakah ada file lain di sdirectory S3cret-T3xt saya menggunakan dirb kembali: 
+'dirb http://192.168.0.131/S3cret-T3xt/'
+namun tidak ada lagi dan saya ingat bahwa layanan ftp terbuka jadi saya cek ftp nya menggunakan command lftp
+'lftp -u anonymous, 192.1680.131'
+dan ada file image jadi saya 'get trytofind.jpg' 
+
+7. saat di cek gambarnya ternyata nothing yang special jadi saya ingat kembali bahwa saya punya secret key jadi mungkin gambar ini menyimpan sesuatu jadi saya menggunakan 'steghide extract -sf trytofind.jpg' dan passphrase nya saya isi secret key ternyata bisa jadi saya dapat file data.txt
+
+8. lalu saya cat data.txt dan ada clue bahwa user renu passwordnya terlalu lemah/weak jadi saya pakai hydra untuk membrute force dan menggunakan wordlist rockyou.txt :
+'hydra -l renu -P /opt/wordlist/rockyou.txt 192.168.0.131 ssh' 
+dapatlah username renu dengan password 987654321 
+
+9.  Selanjutnya saya ssh menggunakan user renu dan setelah itu saya dapat flag user1.txt. selanjutnya saya cek menggunakan 'sudo -l ' namun sudo tidak dapat digunakan oleh user renu. akhirnya saya cek folder home dan ada user lily saya cek ada user2.txt dan saya cat ternyata bisa. dapatlah flag kedua.
+
+10. selanjutnya saya cek kembali di folder lily ada file/folder apa saja menggunakan command 'ls -la' dan didapat folder .ssh dan saya ls .ssh ada file authorized_keys yang isinya untuk renu berarti saya bisa ssh ke lily tanpa password.
+
+11. Akhirnya saya 'ssh lily@localhost' dan bisa, lalu saya 'sudo -l' dan user lily bisa menggunakan sudo untuk perl. saya pun cek gtfo.bins dan cari kata kunci perl dan ada.
+
+12. Menggunakan command berikut saya bisa mendapat hak akses root dan flag root.
+`sudo perl -e 'exec "/bin/sh";'`

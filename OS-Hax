@@ -1,0 +1,30 @@
+OS-HAX vulnhub
+1. Pertama-tama, gw scan dulu ip apa aja yang terhubung ke pc gw dengan command netdiscover, dan ip nya adalah 192.168.88.191
+
+2. lalu gw nmap, nmap -sC -sV 192.168.88.191 dan kita cek port yang kebuka 
+22/tcp open
+80/tcp open
+
+3. lalu kita cek browser dan nothing jadi kita pakai gobuster dan terdapat directory img kita cek 
+
+4. dan terdapat flaghost maka saya download dan terdapat gambar yang kemungkinan clue nya yaitu menambahkan ip di host namun saya penasaran saya pun memakai exiftool dan terdapat mencurigakan yaitu ada kata passw@45 dan saya pun kembali ke browser dan saya liat ada flag2.txt 
+
+5. di dalam flag2.txt terdapat sebuah simbol yang kemungkinan adalah brainfuck yak saya mendapatkan clue lagi setelah di decode yaitu web:Hacker@4514 saya ssh dan berhasil
+
+6. saya pun mencoba sudo -l dan ternyata user web bisa menggunakan tools awk saya pun mencari di gtfo.bins untuk mendapatkan hak akses root
+
+7. dengan menggunakan command sudo awk 'BEGIN {system("/bin/sh")}' saya mendapatkan hak akses root
+
+8. saya ke direktori root dan terdapat final text disana 
+  ______ ____ _   __ ___     __         ____   ____   ____  ______     ______ __     ___    ______
+   / ____//  _// | / //   |   / /        / __ \ / __ \ / __ \/_  __/    / ____// /    /   |  / ____/
+  / /_    / / /  |/ // /| |  / /        / /_/ // / / // / / / / /      / /_   / /    / /| | / / __  
+ / __/  _/ / / /|  // ___ | / /___     / _, _// /_/ // /_/ / / /      / __/  / /___ / ___ |/ /_/ /  
+/_/    /___//_/ |_//_/  |_|/_____/    /_/ |_| \____/ \____/ /_/      /_/    /_____//_/  |_|\____/  
+
+
+
+
+MD5-HASH : bae11ce4f67af91fa58576c1da2aad4b
+
+Rahul_Gehlaut  =>> https://www.linkedin.com/in/rahulgehlaut/

