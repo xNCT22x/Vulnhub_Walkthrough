@@ -37,7 +37,7 @@ Oke disini, ku agak bingung gimana. Ternyata setelah di cek satu persatu ada seb
 
 Dan ketika di run menghasilkan ini :
 
-![](images/CS/output.png)
+![](images/CS/ouput.png)
 
 Setelah disusun menghasilkan kata-kata `puppetmaster` yang merupakan user ssh
 
